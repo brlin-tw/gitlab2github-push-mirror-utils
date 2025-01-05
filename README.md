@@ -28,6 +28,22 @@ GitLab namespace to replace push mirroring settings, currently namespaces includ
 
 GitHub namespace to configure push mirroring to.
 
+## Header variables that can change the utility's behaviors
+
+The following variables can be used to change the utility's behaviors, however they can only be set by directly editing the header portion of the utility script due to sensitive nature:
+
+### GITLAB_PAT
+
+The personal access token with access to the GitLab namespace.  *REQUIRED.*
+
+**Default value:** (unset)
+
+### GITHUB_PAT
+
+The personal access token with access to the GitHub namespace.  This can be use to mitigate GitHub rate limiting.  *OPTIONAL.*
+
+**Default value:** (unset)
+
 ## References
 
 To be addressed.
