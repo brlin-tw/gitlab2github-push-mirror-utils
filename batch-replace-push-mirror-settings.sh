@@ -127,5 +127,66 @@ if test "${GITLAB_NAMESPACE}" == '**UNSET**'; then
     exit 1
 fi
 
+curl_opts_common=(
+    --location
+
+    --fail
+    --silent
+    --show-error
+)
+gitlab_api_endpoint="https://${GITLAB_HOST}/api/v4"
+curl_opts_gitlab=(
+    "${curl_opts_common[@]}"
+    --header "PRIVATE-TOKEN: ${GITLAB_PAT}"
+)
+
+printf \
+    'Info: Determining the type of the "%s" GitLab namespace...\n' \
+    "${GITLAB_NAMESPACE}"
+if ! namespace_raw="$(
+    curl \
+        "${curl_opts_gitlab[@]}" \
+        "${gitlab_api_endpoint}/namespaces/${GITLAB_NAMESPACE}"
+    )"; then
+    printf \
+        'Error: Unable to query the namespace information of the "%s" GitLab namespace.\n' \
+        "${GITLAB_NAMESPACE}" \
+        1>&2
+    exit 2
+fi
+
+jq_opts=(
+    --raw-output
+    --exit-status
+)
+if ! namespace_kind="$(jq "${jq_opts[@]}" .kind <<<"${namespace_raw}")"; then
+    printf \
+        'Error: Unable to parse out the namespace kind information of the "%s" GitLab namespace from the Namespaces GitLab API response.\n' \
+        "${GITLAB_NAMESPACE}" \
+        1>&2
+    exit 2
+fi
+
+case "${namespace_kind}" in
+    user)
+        printf \
+            'Info: The type of the "%s" GitLab namespace is a user.\n' \
+            "${GITLAB_NAMESPACE}"
+    ;;
+    group)
+        printf \
+            'Info: The type of the "%s" GitLab namespace is a group.\n' \
+            "${GITLAB_NAMESPACE}"
+    ;;
+    *)
+        printf \
+            'Error: Unable to determine the type of the "%s" GitLab namespace(namespace_kind == "%s").\n' \
+            "${GITLAB_NAMESPACE}" \
+            "${namespace_kind}" \
+            1>&2
+        exit 2
+    ;;
+esac
+
 printf \
     'Info: Operation completed without errors.\n'
