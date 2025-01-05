@@ -44,6 +44,18 @@ The personal access token with access to the GitHub namespace.  This can be use 
 
 **Default value:** (unset)
 
+## Logic
+
+The following documents the logic of this utility in operation:
+
+1. A list of all GitLab projects in a namespace is queried via GitLab's REST API.
+1. For each GitLab project:
+    1. Determine the URL of the corresponding GitHub project(repository).
+    1. Check whether the GitHub project actually exists.
+    1. If the project exists in the specified GitHub namespace, check whether the GitLab project has an repository mirroring configuration against it.
+    1. If the repository mirroring configuration exists, remove the configuration.
+    1. Create a new repository mirroring configuration with the updated GitHub PAT.
+
 ## References
 
 To be addressed.
