@@ -16,6 +16,18 @@ The following prerequisites must be met in order to use this product:
     + jq  
       For parsing the JSON response of GitLab and GitHub's API.
 
+## Environment variables that can change the utility's behaviors
+
+The following environment variables can be used to change the utility's behaviors according to your needs:
+
+### GITLAB_NAMESPACE
+
+GitLab namespace to replace push mirroring settings, currently namespaces including subgroup is not supported.
+
+### GITHUB_NAMESPACE
+
+GitHub namespace to configure push mirroring to.
+
 ## References
 
 To be addressed.
