@@ -9,6 +9,9 @@ GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"**UNSET**"}"
 GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
 GITLAB_HOST="${GITLAB_HOST:-gitlab.com}"
 
+# How many entries per page to request when pagination is required
+PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-20}"
+
 printf \
     'Info: Configuring the defensive interpreter behaviors...\n'
 set_opts=(
@@ -31,6 +34,11 @@ printf \
     'Info: Checking the existence of the required commands...\n'
 required_commands=(
     curl
+
+    # For parsing the curl command's output
+    grep
+    sed
+
     jq
     realpath
 )
@@ -187,6 +195,207 @@ case "${namespace_kind}" in
         exit 2
     ;;
 esac
+
+
+printf \
+    'Info: Querying the list of projects in the "%s" GitLab namespace...' \
+    "${GITLAB_NAMESPACE}"
+projects=()
+
+case "${namespace_kind}" in
+    user)
+        for ((page = 1; ; page++)); do
+            curl_opts_gitlab_keyset_pagination=(
+                "${curl_opts_gitlab[@]}"
+
+                # Write out the Link HTTP response header after the transfer
+                --write-out '\n\n%header{link}'
+            )
+
+            if test "${page}" -eq 1; then
+                users_projects_url="${gitlab_api_endpoint}/users/${GITLAB_NAMESPACE}/projects?pagination=keyset&order_by=id&sort=asc&per_page=${PAGINATION_ENTRIES}"
+            fi
+
+            if ! namespace_projects_raw="$(
+                curl \
+                    "${curl_opts_gitlab_keyset_pagination[@]}" \
+                    "${users_projects_url}"
+                )"; then
+                printf \
+                    'Error: Unable to query the list of projects in the "%s" GitLab namespace.\n' \
+                    "${GITLAB_NAMESPACE}" \
+                    1>&2
+                exit 2
+            fi
+
+            sed_opts=(
+                # Suppress default behavior of printing pattern space each sed cycle
+                -n
+
+                # Only print first line
+                --expression='1p'
+            )
+            if ! namespace_projects_raw_response="$(
+                sed "${sed_opts[@]}" <<<"${namespace_projects_raw}"
+                )"; then
+                printf \
+                    'Error: Unable to parse out the Users API raw response from the curl output.\n' \
+                    1>&2
+                exit 2
+            fi
+
+            if ! namespace_projects_lines_raw="$(
+                jq --raw-output '.[].path_with_namespace' \
+                    <<<"${namespace_projects_raw_response}"
+                )"; then
+                printf \
+                    '\nError: Unable to parse out the project paths of page "%s" of the list of projects in the "%s" GitLab namespace.\n' \
+                    "${page}" \
+                    "${GITLAB_NAMESPACE}" \
+                    1>&2
+                exit 2
+            fi
+
+            if test -n "${namespace_projects_lines_raw}"; then
+                if ! mapfile -t namespace_projects_lines \
+                    <<<"${namespace_projects_lines_raw}"; then
+                    printf \
+                        '\nError: Unable to load the projects lines to the namespace_projects_lines array.\n' \
+                        1>&2
+                    exit 2
+                fi
+                projects+=("${namespace_projects_lines[@]}")
+            fi
+
+            sed_opts=(
+                # Suppress default behavior of printing pattern space each sed cycle
+                -n
+
+                # Only print third line
+                --expression='3p'
+            )
+            if ! namespace_projects_raw_link="$(
+                sed "${sed_opts[@]}" <<<"${namespace_projects_raw}"
+                )"; then
+                printf \
+                    'Error: Unable to parse out the value of the Link header of the Users API response from the curl output.\n' \
+                    1>&2
+                exit 2
+            fi
+
+            if test -z "${namespace_projects_raw_link}"; then
+                break
+            fi
+
+            grep_opts=(
+                --perl-regexp
+                --only-matching
+                --regexp='[^<>]+(?=>; rel="next")'
+            )
+            if ! users_projects_url="$(
+                grep "${grep_opts[@]}" <<<"${namespace_projects_raw_link}"
+                )"; then
+                printf \
+                    'Error: Unable to parse out the URL of the next user projects page.\n' \
+                    1>&2
+                exit 2
+            fi
+            printf .
+        done
+        printf '\n'
+    ;;
+    group)
+        # Groups API doesn't support keyset pagination for authenticated users yet, query page count first
+        if ! namespace_projects_pages_raw="$(
+                curl \
+                    --head \
+                    "${curl_opts_gitlab[@]}" \
+                    "${gitlab_api_endpoint}/groups/${GITLAB_NAMESPACE}/projects?per_page=${PAGINATION_ENTRIES}"
+            )"; then
+            printf \
+                'Error: Unable to query the Groups API response header of the "%s" GitLab namespace.\n' \
+                "${GITLAB_NAMESPACE}" \
+                1>&2
+            exit 2
+        fi
+
+        grep_opts=(
+            --perl-regexp
+            --regexp='(?<=^x-total-pages: )[[:digit:]]+'
+            --only-matching
+        )
+        if ! namespace_projects_pages="$(grep "${grep_opts[@]}" <<< "${namespace_projects_pages_raw}")"; then
+            printf \
+                'Error: Unable to query the pagination page count of the "%s" namespace projects.\n' \
+                "${GITLAB_NAMESPACE}" \
+                1>&2
+            exit 2
+        fi
+
+        namespace_projects_pages_digits="${#namespace_projects_pages}"
+        # Prepare spaces to be backspaced during the first loop iteration
+        #      '\([[:digit:]]{digits}/[[:digit:]]{digits}\)'
+        printf " %${namespace_projects_pages_digits}s %${namespace_projects_pages_digits}s " ' ' ' '
+        progress_report_chars="$((namespace_projects_pages_digits * 2 + 3))"
+        for ((page = 1; page <= namespace_projects_pages; page++)); do
+            for ((char = 1; char <= progress_report_chars; char++ )); do
+                printf '\b'
+            done
+
+            printf \
+                "(%${namespace_projects_pages_digits}s/%${namespace_projects_pages_digits}s)" \
+                "${page}" "${namespace_projects_pages}"
+            if ! namespace_projects_raw="$(
+                curl \
+                    "${curl_opts_gitlab[@]}" \
+                    "${gitlab_api_endpoint}/groups/${GITLAB_NAMESPACE}/projects?page=${page}&per_page=${PAGINATION_ENTRIES}"
+                )"; then
+                printf \
+                    '\nError: Unable to query page "%s" of the list of projects in the "%s" GitLab namespace.\n' \
+                    "${page}" \
+                    "${GITLAB_NAMESPACE}" \
+                    1>&2
+                exit 2
+            fi
+
+            if ! namespace_projects_lines_raw="$(
+                jq --raw-output '.[].path_with_namespace' \
+                    <<<"${namespace_projects_raw}"
+                )"; then
+                printf \
+                    '\nError: Unable to parse out the project paths of page "%s" of the list of projects in the "%s" GitLab namespace.\n' \
+                    "${page}" \
+                    "${GITLAB_NAMESPACE}" \
+                    1>&2
+                exit 2
+            fi
+
+            if ! mapfile -t namespace_projects_lines \
+                <<<"${namespace_projects_lines_raw}"; then
+                printf \
+                    '\nError: Unable to load the projects lines to the namespace_projects_lines array.\n' \
+                    1>&2
+                exit 2
+            fi
+            projects+=("${namespace_projects_lines[@]}")
+        done
+        printf '\n'
+    ;;
+    *)
+        printf \
+            'FATAL: Unsupported kind of namespace "%s".\n' \
+            "${namespace_kind}" \
+            1>&2
+        exit 99
+    ;;
+esac
+
+printf 'Info: Found the following %u projects:\n\n' "${#projects[@]}"
+
+for project in "${projects[@]}"; do
+    printf '* %s\n' "${project}"
+done
+printf '\n'
 
 printf \
     'Info: Operation completed without errors.\n'

@@ -13,6 +13,9 @@ The following prerequisites must be met in order to use this product:
 * The host running the utility must have the following software installed and its commands to be available in your command search PATHs:
     + curl  
       For interacting with GitLab and GitHub's API.
+    + grep  
+      sed  
+      For parsing the curl command's output.
     + jq  
       For parsing the JSON response of GitLab and GitHub's API.
 
@@ -58,7 +61,24 @@ The following documents the logic of this utility in operation:
 
 ## References
 
-To be addressed.
+The following materials are referenced during the development of this project:
+
+* [REST API | GitLab](https://docs.gitlab.com/ee/api/rest/)  
+  Explains:
+    + The basic usage of the GitLab REST API.
+    + How to do pagination.
+* [REST API authentication | GitLab](https://docs.gitlab.com/ee/api/rest/authentication.html)  
+  Explains how to authenticate the user when using the GitLab REST API.
+* [Store and reuse values using variables | Postman Learning Center](https://learning.postman.com/docs/sending-requests/variables/variables/#defining-variables)  
+  Explains how to define secret
+* curl(1) manpage  
+  Explains the usage of the `--header` option.
+* [Escape sequences - IBM Documentation](https://www.ibm.com/docs/en/i/7.3?topic=set-escape-sequences)  
+  Explains the escape sequence of the backspace control character.
+* [List projects | Groups API | GitLab](https://docs.gitlab.com/ee/api/groups.html#list-projects)  
+  Explains how to query all projects in a user-specified group.
+* [List a user’s projects | Projects API | GitLab](https://docs.gitlab.com/ee/api/projects.html#list-a-users-projects)  
+  Explains how to query all projects in a user-specified user.
 
 ## Licensing
 
