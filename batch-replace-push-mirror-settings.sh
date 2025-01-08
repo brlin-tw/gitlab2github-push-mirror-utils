@@ -8,6 +8,7 @@ GITHUB_PAT='unset'
 GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"**UNSET**"}"
 GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
 GITLAB_API_ENDPOINT="${GITLAB_API_ENDPOINT:-https://gitlab.com/api/v4}"
+GITHUB_API_ENDPOINT="${GITHUB_API_ENDPOINT:-https://api.github.com}"
 
 # How many entries per page to request when pagination is required
 PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-100}"
@@ -394,6 +395,72 @@ for project in "${projects[@]}"; do
     printf '* %s\n' "${project}"
 done
 printf '\n'
+
+curl_opts_github=(
+    "${curl_opts_common[@]}"
+    --header 'Accept: application/vnd.github+json'
+    --header 'X-GitHub-Api-Version: 2022-11-28'
+    --header "Authorization: Bearer ${GITHUB_PAT}"
+)
+curl_opts_github_response_code_only=(
+    "${curl_opts_github[@]}"
+    --head
+    --output /dev/null
+    --write-out '%{http_code}'
+)
+for project in "${projects[@]}"; do
+    project_name="${project#*/}"
+
+    if test "${project_name}" != "${project_name//\//}"; then
+        printf \
+            'Warning: Unsupported subgroup project "%s" detected, skipping...\n' \
+            "${project}" \
+            1>&2
+        continue
+    fi
+
+    printf \
+        'Info: Checking whether the "%s" project exist in the "%s" GitHub namespace...\n' \
+        "${project_name}" \
+        "${GITHUB_NAMESPACE}"
+    if ! http_status_code="$(
+        curl "${curl_opts_github_response_code_only[@]}" \
+            "${GITHUB_API_ENDPOINT}/repos/${GITHUB_NAMESPACE}/${project_name}" \
+            2>/dev/null \
+            || test "${?}" == 22 # Don't --fail on error HTTP status codes
+        )"; then
+        printf \
+            'Error: Unable to get the repository information of the "%s" project exist in the "%s" GitHub namespace.\n' \
+            "${project_name}" \
+            "${GITHUB_NAMESPACE}" \
+            1>&2
+        exit 2
+    fi
+
+    case "${http_status_code}" in
+        200)
+            printf \
+                'Info: Verified that the "%s" project exist in the "%s" GitHub namespace.\n' \
+                "${project_name}" \
+                "${GITHUB_NAMESPACE}"
+        ;;
+        404)
+            printf \
+                'Info: The "%s" project not found in the "%s" GitHub namespace, skipping...\n' \
+                "${project_name}" \
+                "${GITHUB_NAMESPACE}"
+            continue
+        ;;
+        *)
+            printf \
+                'Error: Unable to get the repository information of the "%s" project exist in the "%s" GitHub namespace.\n' \
+                "${project_name}" \
+                "${GITHUB_NAMESPACE}" \
+                1>&2
+            exit 2
+        ;;
+    esac
+done
 
 printf \
     'Info: Operation completed without errors.\n'
