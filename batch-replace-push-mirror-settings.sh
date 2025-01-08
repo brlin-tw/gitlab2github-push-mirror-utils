@@ -196,7 +196,6 @@ case "${namespace_kind}" in
     ;;
 esac
 
-
 printf \
     'Info: Querying the list of projects in the "%s" GitLab namespace...' \
     "${GITLAB_NAMESPACE}"
