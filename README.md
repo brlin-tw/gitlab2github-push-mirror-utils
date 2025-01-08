@@ -91,6 +91,12 @@ The following materials are referenced during the development of this project:
   Explains how to query all projects in a user-specified group.
 * [List a user’s projects | Projects API | GitLab](https://docs.gitlab.com/ee/api/projects.html#list-a-users-projects)  
   Explains how to query all projects in a user-specified user.
+* [Getting started with the REST API - GitHub Docs](https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api)  
+  Explains the basic usage of the GitHub REST API.
+* [Authenticating to the REST API - GitHub Docs](https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api#about-authentication)  
+  Explains how to do authentication using the GitHub REST API.
+* [Get a repository - REST API endpoints for repositories - GitHub Docs](https://docs.github.com/en/rest/repos/repos#get-a-repository)  
+  Explains how to query the information of a certain repository using the GitHub REST API.
 
 ## Licensing
 
