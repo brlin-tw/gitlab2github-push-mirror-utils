@@ -7,7 +7,7 @@ GITLAB_PAT='unset'
 GITHUB_PAT='unset'
 GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"**UNSET**"}"
 GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
-GITLAB_HOST="${GITLAB_HOST:-gitlab.com}"
+GITLAB_API_ENDPOINT="${GITLAB_API_ENDPOINT:-https://gitlab.com/api/v4}"
 
 # How many entries per page to request when pagination is required
 PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-20}"
@@ -142,7 +142,6 @@ curl_opts_common=(
     --silent
     --show-error
 )
-gitlab_api_endpoint="https://${GITLAB_HOST}/api/v4"
 curl_opts_gitlab=(
     "${curl_opts_common[@]}"
     --header "PRIVATE-TOKEN: ${GITLAB_PAT}"
@@ -154,7 +153,7 @@ printf \
 if ! namespace_raw="$(
     curl \
         "${curl_opts_gitlab[@]}" \
-        "${gitlab_api_endpoint}/namespaces/${GITLAB_NAMESPACE}"
+        "${GITLAB_API_ENDPOINT}/namespaces/${GITLAB_NAMESPACE}"
     )"; then
     printf \
         'Error: Unable to query the namespace information of the "%s" GitLab namespace.\n' \
@@ -212,7 +211,7 @@ case "${namespace_kind}" in
             )
 
             if test "${page}" -eq 1; then
-                users_projects_url="${gitlab_api_endpoint}/users/${GITLAB_NAMESPACE}/projects?pagination=keyset&order_by=id&sort=asc&per_page=${PAGINATION_ENTRIES}"
+                users_projects_url="${GITLAB_API_ENDPOINT}/users/${GITLAB_NAMESPACE}/projects?pagination=keyset&order_by=id&sort=asc&per_page=${PAGINATION_ENTRIES}"
             fi
 
             if ! namespace_projects_raw="$(
@@ -309,7 +308,7 @@ case "${namespace_kind}" in
                 curl \
                     --head \
                     "${curl_opts_gitlab[@]}" \
-                    "${gitlab_api_endpoint}/groups/${GITLAB_NAMESPACE}/projects?per_page=${PAGINATION_ENTRIES}"
+                    "${GITLAB_API_ENDPOINT}/groups/${GITLAB_NAMESPACE}/projects?per_page=${PAGINATION_ENTRIES}"
             )"; then
             printf \
                 'Error: Unable to query the Groups API response header of the "%s" GitLab namespace.\n' \
@@ -347,7 +346,7 @@ case "${namespace_kind}" in
             if ! namespace_projects_raw="$(
                 curl \
                     "${curl_opts_gitlab[@]}" \
-                    "${gitlab_api_endpoint}/groups/${GITLAB_NAMESPACE}/projects?page=${page}&per_page=${PAGINATION_ENTRIES}"
+                    "${GITLAB_API_ENDPOINT}/groups/${GITLAB_NAMESPACE}/projects?page=${page}&per_page=${PAGINATION_ENTRIES}"
                 )"; then
                 printf \
                     '\nError: Unable to query page "%s" of the list of projects in the "%s" GitLab namespace.\n' \
