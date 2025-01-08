@@ -31,6 +31,12 @@ GitLab namespace to replace push mirroring settings, currently namespaces includ
 
 GitHub namespace to configure push mirroring to.
 
+### GITLAB_API_ENDPOINT
+
+The GitLab REST API v4-compatible endpoint to use.
+
+**Default value:** `https://gitlab.com/api/v4`
+
 ## Header variables that can change the utility's behaviors
 
 The following variables can be used to change the utility's behaviors, however they can only be set by directly editing the header portion of the utility script due to sensitive nature:
