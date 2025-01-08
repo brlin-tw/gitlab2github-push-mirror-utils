@@ -10,7 +10,7 @@ GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
 GITLAB_API_ENDPOINT="${GITLAB_API_ENDPOINT:-https://gitlab.com/api/v4}"
 
 # How many entries per page to request when pagination is required
-PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-20}"
+PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-100}"
 
 printf \
     'Info: Configuring the defensive interpreter behaviors...\n'
