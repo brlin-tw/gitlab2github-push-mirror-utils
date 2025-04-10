@@ -444,6 +444,12 @@ for project in "${projects[@]}"; do
                 "${project_name}" \
                 "${GITHUB_NAMESPACE}"
         ;;
+        401)
+            printf \
+                'Error: The GitHub personal access token is invalid or has insufficient permissions.\n' \
+                1>&2
+            exit 2
+        ;;
         404)
             printf \
                 'Info: The "%s" project not found in the "%s" GitHub namespace, skipping...\n' \
