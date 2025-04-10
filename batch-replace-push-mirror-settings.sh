@@ -420,7 +420,7 @@ for project in "${projects[@]}"; do
     fi
 
     printf \
-        'Info: Checking whether the "%s" project exist in the "%s" GitHub namespace...\n' \
+        'Info: Checking whether the "%s" project existed in the "%s" GitHub namespace...\n' \
         "${project_name}" \
         "${GITHUB_NAMESPACE}"
     if ! http_status_code="$(
