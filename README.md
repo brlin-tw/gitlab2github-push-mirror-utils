@@ -99,6 +99,8 @@ The following materials are referenced during the development of this project:
   Explains how to do authentication using the GitHub REST API.
 * [Get a repository - REST API endpoints for repositories - GitHub Docs](https://docs.github.com/en/rest/repos/repos#get-a-repository)  
   Explains how to query the information of a certain repository using the GitHub REST API.
+* [Tutorial | jq](https://jqlang.github.io/jq/tutorial/)  
+  Explains the basic usage of jq.
 
 ## Licensing
 
