@@ -70,6 +70,7 @@ The following documents the logic of this utility in operation:
     1. Determine the URL of the corresponding GitHub project(repository).
     1. Check whether the GitHub project actually exists.
     1. If the project exists in the specified GitHub namespace, check whether the GitLab project has an repository mirroring configuration against it.
+    1. If the repository mirroring configuration does not exist, skipping this project as we aren't sure the GitLab project has all the commits from GitHub yet.
     1. If the repository mirroring configuration exists, remove the configuration.
     1. Create a new repository mirroring configuration with the updated GitHub PAT.
 
