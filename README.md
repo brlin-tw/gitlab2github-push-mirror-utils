@@ -59,6 +59,8 @@ The personal access token with access to the GitHub namespace.  This can be use 
 
 **Default value:** (unset)
 
+Required permission: Repository permissions > Metadata (Read-only).
+
 ## Logic
 
 The following documents the logic of this utility in operation:
