@@ -51,6 +51,14 @@ The following variables can be used to change the utility's behaviors, however t
 
 The personal access token with access to the GitLab namespace.  *REQUIRED.*
 
+Required scopes:
+
+* `read_api`: For:
+    + Querying available projects in the namespace.
+* `api`: For:
+    + Removing existing repository push mirroring configurations.
+    + Adding new repository push mirroring configurations.
+
 **Default value:** (unset)
 
 ### GITHUB_PAT
@@ -102,6 +110,8 @@ The following materials are referenced during the development of this project:
   Explains how to query the information of a certain repository using the GitHub REST API.
 * [Tutorial | jq](https://jqlang.github.io/jq/tutorial/)  
   Explains the basic usage of jq.
+* [Personal access token scopes | Personal access tokens | GitLab Docs](https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-access-token-scopes)  
+  Explains possible scopes(permissions) a GitLab PAT may have.
 
 ## Licensing
 
