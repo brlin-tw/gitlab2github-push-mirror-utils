@@ -19,6 +19,14 @@ The following prerequisites must be met in order to use this product:
     + jq  
       For parsing the JSON response of GitLab and GitHub's API.
 
+## Usage
+
+1. Download the product's release archive from the [Releases page](https://gitlab.com/brlin/replace-gitlab-push-mirror-settings/-/releases).
+1. Extract the downloaded archive.
+1. Edit the `batch-replace-push-mirror-settings.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
+1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
+1. Run the `batch-replace-push-mirror-settings.sh` script.
+
 ## Environment variables that can change the utility's behaviors
 
 The following environment variables can be used to change the utility's behaviors according to your needs:
