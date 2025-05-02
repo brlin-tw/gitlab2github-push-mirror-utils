@@ -73,11 +73,21 @@ Required scopes:
 
 ### GITHUB_PAT
 
-The personal access token with access to the GitHub namespace.  This can be use to mitigate GitHub rate limiting.  *OPTIONAL.*
+The personal access token with access to the GitHub namespace.  This is used to:
+
+* Mitigate GitHub rate limiting.
+* Authenticate the user during the push mirroring process.
+
+*REQUIRED.*
+
+It should have the following GitHub fine-grained permissions:
+
+* Repository permissions > **Read** access to metadata
+* Repository permissions > **Read and write** access to:
+    + Contents: To allow pushing non-workflow related content to the target repository.
+    + Workflows: To allow pushing GitHub Actions workflow related content to the target repository.
 
 **Default value:** (unset)
-
-Required permission: Repository permissions > Metadata (Read-only).
 
 ## Logic
 
