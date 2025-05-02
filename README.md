@@ -47,6 +47,12 @@ The GitHub API v2022-11-28-compatible endpoint to use.
 
 **Default value:** `https://api.github.com`
 
+### PAGINATION_ENTRIES
+
+The number of entries per page to request when pagination is required.
+
+**Default value:** `100`
+
 ## Header variables that can change the utility's behaviors
 
 The following variables can be used to change the utility's behaviors, however they can only be set by directly editing the header portion of the utility script due to sensitive nature:

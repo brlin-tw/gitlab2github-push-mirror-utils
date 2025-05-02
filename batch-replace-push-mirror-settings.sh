@@ -9,8 +9,6 @@ GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"${USER:-"**UNSET**"}"}"
 GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
 GITLAB_API_ENDPOINT="${GITLAB_API_ENDPOINT:-https://gitlab.com/api/v4}"
 GITHUB_API_ENDPOINT="${GITHUB_API_ENDPOINT:-https://api.github.com}"
-
-# How many entries per page to request when pagination is required
 PAGINATION_ENTRIES="${PAGINATION_ENTRIES:-100}"
 
 printf \
