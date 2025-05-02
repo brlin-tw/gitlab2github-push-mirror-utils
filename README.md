@@ -27,6 +27,8 @@ The following environment variables can be used to change the utility's behavior
 
 GitLab namespace to replace push mirroring settings, currently namespaces including subgroup is not supported.
 
+**Default value:** Value of the `USER` environment variable(e.g. Your username).
+
 ### GITHUB_NAMESPACE
 
 GitHub namespace to configure push mirroring to.
