@@ -110,6 +110,10 @@ The following documents the logic of this utility in operation:
     1. If the repository mirroring configuration exists, remove the configuration.
     1. Create a new repository mirroring configuration with the updated GitHub PAT.
 
+## Limitations
+
+The product does not support GitLab subgroups, they will be skipped.
+
 ## References
 
 The following materials are referenced during the development of this project:
