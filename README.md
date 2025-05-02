@@ -33,6 +33,8 @@ GitLab namespace to replace push mirroring settings, currently namespaces includ
 
 GitHub namespace to configure push mirroring to.
 
+**Default value:** Value of the `GITLAB_NAMESPACE` environment variable.
+
 ### GITLAB_API_ENDPOINT
 
 The GitLab REST API v4-compatible endpoint to use.
