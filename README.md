@@ -84,7 +84,7 @@ Required scopes:
 The personal access token with access to the GitHub namespace.  This is used to:
 
 * Mitigate GitHub rate limiting.
-* Authenticate the user during the push mirroring process.
+* Authenticate the user during the GitLab push mirroring process.
 
 *REQUIRED.*
 
@@ -92,8 +92,8 @@ It should have the following GitHub fine-grained permissions:
 
 * Repository permissions > **Read** access to metadata
 * Repository permissions > **Read and write** access to:
-    + Contents: To allow pushing non-workflow related content to the target repository.
-    + Workflows: To allow pushing GitHub Actions workflow related content to the target repository.
+    + Contents: To allow GitLab to push non-GitHub Actions workflow related content to the mirrored repository.
+    + Workflows: To allow GitLab to push GitHub Actions workflow related content to the mirrored repository.
 
 **Default value:** (unset)
 
