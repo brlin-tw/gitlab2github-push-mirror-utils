@@ -21,7 +21,7 @@ The following prerequisites must be met in order to use this product:
 
 ## Usage
 
-1. Download the product's release archive from the [Releases page](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/releases).
+1. Download the product's release archive from [the Releases page](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/releases).
 1. Extract the downloaded archive.
 1. Edit the `rotate-gitlab2github-push-mirror-credentials.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
 1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
