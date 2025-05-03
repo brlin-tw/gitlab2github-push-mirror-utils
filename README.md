@@ -1,9 +1,9 @@
-# replace-gitlab-push-mirror-settings
+# gitlab2github-push-mirror-utils
 
-Batch replace GitLab push mirror settings for all repositories in a namespace.
+Batch rotate credentials of GitLab push mirroring settings for all repositories in a namespace that is configured to push to GitHub.
 
-<https://gitlab.com/brlin/replace-gitlab-push-mirror-settings>  
-[![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/replace-gitlab-push-mirror-settings/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/replace-gitlab-push-mirror-settings/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/replace-gitlab-push-mirror-settings/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/replace-gitlab-push-mirror-settings/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/replace-gitlab-push-mirror-settings "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/replace-gitlab-push-mirror-settings)
+<https://gitlab.com/brlin/gitlab2github-push-mirror-utils>  
+[![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/gitlab2github-push-mirror-utils/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/gitlab2github-push-mirror-utils/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/gitlab2github-push-mirror-utils "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/gitlab2github-push-mirror-utils)
 
 ## Prerequisites
 
@@ -21,11 +21,11 @@ The following prerequisites must be met in order to use this product:
 
 ## Usage
 
-1. Download the product's release archive from the [Releases page](https://gitlab.com/brlin/replace-gitlab-push-mirror-settings/-/releases).
+1. Download the product's release archive from the [Releases page](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/releases).
 1. Extract the downloaded archive.
-1. Edit the `batch-replace-push-mirror-settings.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
+1. Edit the `rotate-gitlab2github-push-mirror-credentials.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
 1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
-1. Run the `batch-replace-push-mirror-settings.sh` script.
+1. Run the `rotate-gitlab2github-push-mirror-credentials.sh` script.
 
 ## Environment variables that can change the utility's behaviors
 
