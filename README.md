@@ -11,12 +11,12 @@ The following prerequisites must be met in order to use this product:
 
 * The host running the utility must have Internet access.
 * The host running the utility must have the following software installed and its commands to be available in your command search PATHs:
-    + curl  
+    + [curl](https://curl.se/)  
       For interacting with GitLab and GitHub's API.
-    + grep  
-      sed  
+    + [grep](https://www.gnu.org/software/grep/)  
+      [sed](https://www.gnu.org/software/sed/)  
       For parsing the curl command's output.
-    + jq  
+    + [jq](https://jqlang.org/)  
       For parsing the JSON response of GitLab and GitHub's API.
 
 ## Usage
