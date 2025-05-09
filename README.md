@@ -30,7 +30,7 @@ The following prerequisites must be met in order to use this utility:
 
 ### Usage
 
-1. Edit the `rotate-gitlab2github-push-mirror-credentials.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
+1. Edit [the `rotate-gitlab2github-push-mirror-credentials.sh` script](rotate-gitlab2github-push-mirror-credentials.sh) to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
 1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
 1. Run the `rotate-gitlab2github-push-mirror-credentials.sh` script.
 
