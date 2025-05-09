@@ -1,13 +1,22 @@
 # gitlab2github-push-mirror-utils
 
-Batch rotate credentials of GitLab push mirroring settings for all repositories in a namespace that is configured to push to GitHub.
+Utilities for managing GitLab-to-GitHub push mirror configurations.
 
 <https://gitlab.com/brlin/gitlab2github-push-mirror-utils>  
 [![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/gitlab2github-push-mirror-utils/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/gitlab2github-push-mirror-utils/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/gitlab2github-push-mirror-utils "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/gitlab2github-push-mirror-utils)
 
-## Prerequisites
+## Preparation
 
-The following prerequisites must be met in order to use this product:
+1. Download the product's release archive from [the Releases page](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/releases).
+1. Extract the downloaded archive.
+
+### The `rotate-gitlab2github-push-mirror-credentials.sh` utility
+
+Batch rotate credentials of GitLab push mirroring settings for all repositories in a namespace that is configured to push to GitHub.
+
+### Prerequisites
+
+The following prerequisites must be met in order to use this utility:
 
 * The host running the utility must have Internet access.
 * The host running the utility must have the following software installed and its commands to be available in your command search PATHs:
@@ -19,53 +28,51 @@ The following prerequisites must be met in order to use this product:
     + [jq](https://jqlang.org/)  
       For parsing the JSON response of GitLab and GitHub's API.
 
-## Usage
+### Usage
 
-1. Download the product's release archive from [the Releases page](https://gitlab.com/brlin/gitlab2github-push-mirror-utils/-/releases).
-1. Extract the downloaded archive.
 1. Edit the `rotate-gitlab2github-push-mirror-credentials.sh` script to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
 1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
 1. Run the `rotate-gitlab2github-push-mirror-credentials.sh` script.
 
-## Environment variables that can change the utility's behaviors
+### Environment variables that can change the utility's behaviors
 
 The following environment variables can be used to change the utility's behaviors according to your needs:
 
-### GITLAB_NAMESPACE
+#### GITLAB_NAMESPACE
 
 GitLab namespace to replace push mirroring settings, currently namespaces including subgroup is not supported.
 
 **Default value:** Value of the `USER` environment variable(e.g. Your username).
 
-### GITHUB_NAMESPACE
+#### GITHUB_NAMESPACE
 
 GitHub namespace to configure push mirroring to.
 
 **Default value:** Value of the `GITLAB_NAMESPACE` environment variable.
 
-### GITLAB_API_ENDPOINT
+#### GITLAB_API_ENDPOINT
 
 The GitLab REST API v4-compatible endpoint to use.
 
 **Default value:** `https://gitlab.com/api/v4`
 
-### GITHUB_API_ENDPOINT
+#### GITHUB_API_ENDPOINT
 
 The GitHub API v2022-11-28-compatible endpoint to use.
 
 **Default value:** `https://api.github.com`
 
-### PAGINATION_ENTRIES
+#### PAGINATION_ENTRIES
 
 The number of entries per page to request when pagination is required.
 
 **Default value:** `100`
 
-## Header variables that can change the utility's behaviors
+### Header variables that can change the utility's behaviors
 
 The following variables can be used to change the utility's behaviors, however they can only be set by directly editing the header portion of the utility script due to sensitive nature:
 
-### GITLAB_PAT
+#### GITLAB_PAT
 
 The personal access token with access to the GitLab namespace.  *REQUIRED.*
 
@@ -79,7 +86,7 @@ Required scopes:
 
 **Default value:** (unset)
 
-### GITHUB_PAT
+#### GITHUB_PAT
 
 The personal access token with access to the GitHub namespace.  This is used to:
 
@@ -97,7 +104,7 @@ It should have the following GitHub fine-grained permissions:
 
 **Default value:** (unset)
 
-## Logic
+### Logic
 
 The following documents the logic of this utility in operation:
 
@@ -110,7 +117,7 @@ The following documents the logic of this utility in operation:
     1. If the repository mirroring configuration exists, remove the configuration.
     1. Create a new repository mirroring configuration with the updated GitHub PAT.
 
-## Limitations
+### Limitations
 
 The product does not support GitLab subgroups, they will be skipped.
 
