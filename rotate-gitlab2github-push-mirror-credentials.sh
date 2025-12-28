@@ -368,12 +368,16 @@ case "${namespace_kind}" in
                 exit 2
             fi
 
-            if ! mapfile -t namespace_projects_lines \
-                <<<"${namespace_projects_lines_raw}"; then
-                printf \
-                    '\nError: Unable to load the projects lines to the namespace_projects_lines array.\n' \
-                    1>&2
-                exit 2
+            if test -z "${namespace_projects_lines_raw}"; then
+                namespace_projects_lines=()
+            else
+                if ! mapfile -t namespace_projects_lines \
+                    <<<"${namespace_projects_lines_raw}"; then
+                    printf \
+                        '\nError: Unable to load the projects lines to the namespace_projects_lines array.\n' \
+                        1>&2
+                    exit 2
+                fi
             fi
             projects+=("${namespace_projects_lines[@]}")
         done
