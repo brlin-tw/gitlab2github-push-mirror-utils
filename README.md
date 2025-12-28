@@ -151,6 +151,8 @@ The following materials are referenced during the development of this project:
   Explains the basic usage of jq.
 * [Personal access token scopes | Personal access tokens | GitLab Docs](https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-access-token-scopes)  
   Explains possible scopes(permissions) a GitLab PAT may have.
+* [Here Strings | Redirections (Bash Reference Manual)](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Strings)  
+  Explains why loading the content of a empty here string using mapfile will not result in an empty array.
 
 ## Licensing
 
