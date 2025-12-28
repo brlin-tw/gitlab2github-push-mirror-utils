@@ -399,6 +399,7 @@ for project in "${projects[@]}"; do
 done
 printf '\n'
 
+common_projects=()
 curl_opts_github=(
     "${curl_opts_common[@]}"
     --header 'Accept: application/vnd.github+json'
@@ -446,6 +447,7 @@ for project in "${projects[@]}"; do
                 'Info: Verified that the "%s" project exist in the "%s" GitHub namespace.\n' \
                 "${project_name}" \
                 "${GITHUB_NAMESPACE}"
+            common_projects+=("${project}")
         ;;
         401)
             printf \
@@ -469,6 +471,180 @@ for project in "${projects[@]}"; do
             exit 2
         ;;
     esac
+done
+
+printf \
+    'Info: Found the following %u common projects:\n\n' \
+    "${#common_projects[@]}"
+for project in "${common_projects[@]}"; do
+    printf '* %s\n' "${project}"
+done
+printf '\n'
+
+printf \
+    'Info: Rotating the push mirror credentials of the common projects...\n'
+for project in "${common_projects[@]}"; do
+    project_id_encoded="${project//\//%2F}"
+    printf \
+        'Info: Fetching the current push mirror settings of the "%s" project...\n' \
+        "${project}"
+    if ! project_push_mirrors_raw="$(
+        curl "${curl_opts_gitlab[@]}" \
+            "${GITLAB_API_ENDPOINT}/projects/${project_id_encoded}/remote_mirrors"
+        )"; then
+        printf \
+            'Error: Unable to query the push mirror settings of the "%s" project.\n' \
+            "${project}" \
+            1>&2
+        exit 2
+    fi
+
+    exit_status=0
+    project_github_push_mirrors_raw="$(
+        jq "${jq_opts[@]}" \
+            '[.[] | select(.url | startswith("https://") and contains("@github.com/"))]' \
+            <<<"${project_push_mirrors_raw}"
+    )" || exit_status="${?}"
+    case "${exit_status}" in
+        0|4)
+            :
+        ;;
+        *)
+            printf \
+                'Error: Unable to parse out the information of GitHub push mirrors of the "%s" project from the Remote Mirrors GitLab API response.\n' \
+                "${project}" \
+                1>&2
+            exit 2
+        ;;
+    esac
+
+    exit_status=0
+    project_github_push_mirror_ids_raw="$(
+        jq "${jq_opts[@]}" \
+            '.[] | .id' \
+            <<<"${project_github_push_mirrors_raw}"
+    )" || exit_status="${?}"
+    case "${exit_status}" in
+        0|4)
+            :
+        ;;
+        *)
+            printf \
+                'Error: Unable to parse out the GitHub push mirror IDs of the "%s" project from the Remote Mirrors GitLab API response.\n' \
+                "${project}" \
+                1>&2
+            exit 2
+        ;;
+    esac
+
+    if test -z "${project_github_push_mirror_ids_raw}"; then
+        printf \
+            'Info: No GitHub push mirror settings found in the "%s" project.\n' \
+            "${project}"
+        project_github_push_mirror_ids=()
+    else
+        printf \
+            'Info: Loading the GitHub push mirror IDs of the "%s" project into the project_github_push_mirror_ids array...\n' \
+            "${project}"
+        if ! mapfile -t project_github_push_mirror_ids \
+            <<<"${project_github_push_mirror_ids_raw}"; then
+            printf \
+                'Error: Unable to load the GitHub push mirror IDs to the project_github_push_mirror_ids array.\n' \
+                1>&2
+            exit 2
+        fi
+    fi
+
+    if test "${#project_github_push_mirror_ids[@]}" -gt 0; then
+        for mirror_id in "${project_github_push_mirror_ids[@]}"; do
+            exit_status=0
+            mirror_url="$(
+                jq "${jq_opts[@]}" \
+                    --argjson mirror_id "${mirror_id}" \
+                    '.[] | select(.id == $mirror_id) | .url' \
+                    <<<"${project_github_push_mirrors_raw}"
+            )" || exit_status="${?}"
+            case "${exit_status}" in
+                0)
+                    :
+                ;;
+                *)
+                    printf \
+                        'Error: Unable to parse out the URL of the GitHub push mirror with the "%s" ID of the "%s" project from the Remote Mirrors GitLab API response.\n' \
+                        "${mirror_id}" \
+                        "${project}" \
+                        1>&2
+                    exit 2
+            esac
+
+            printf \
+                'Info: Removing the GitHub push mirror setting "%s" (ID: "%s") of the "%s" project...\n' \
+                "${mirror_url}" \
+                "${mirror_id}" \
+                "${project}"
+            if ! curl -X DELETE \
+                "${curl_opts_gitlab[@]}" \
+                "${GITLAB_API_ENDPOINT}/projects/${project_id_encoded}/remote_mirrors/${mirror_id}"; then
+                printf \
+                    'Error: Unable to remove the GitHub push mirror setting with the "%s" ID of the "%s" project.\n' \
+                    "${mirror_id}" \
+                    "${project}" \
+                    1>&2
+                exit 2
+            fi
+            printf \
+                'Info: Successfully removed the GitHub push mirror setting with the "%s" ID of the "%s" project.\n' \
+                "${mirror_id}" \
+                "${project}"
+        done
+    fi
+
+    printf \
+        'Info: Constructing the payload for adding a new GitHub push mirror setting to the "%s" project...\n' \
+        "${project}"
+    mirror_url_with_token="https://${GITHUB_NAMESPACE}:${GITHUB_PAT}@github.com/${GITHUB_NAMESPACE}/${project#*/}.git"
+    jq_opts_payload_construction=(
+        --null-input
+        --arg url "${mirror_url_with_token}"
+        --arg auth_method password
+        --argjson enabled true
+        --argjson keep_divergent_refs false
+        --argjson only_protected_branches false
+    )
+    if ! payload="$(
+        jq "${jq_opts_payload_construction[@]}" \
+            '{
+                url: $url,
+                auth_method: $auth_method,
+                enabled: $enabled,
+                keep_divergent_refs: $keep_divergent_refs,
+                only_protected_branches: $only_protected_branches
+            }'
+        )"; then
+        printf \
+            'Error: Unable to construct the payload for adding a new GitHub push mirror setting to the "%s" project.\n' \
+            "${project}" \
+            1>&2
+        exit 2
+    fi
+
+    printf \
+        'Info: Adding a new GitHub push mirror setting to the "%s" project...\n' \
+        "${project}"
+    if ! add_github_project_push_mirrors_raw="$(
+        curl "${curl_opts_gitlab[@]}" \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data-raw "${payload}" \
+            "${GITLAB_API_ENDPOINT}/projects/${project_id_encoded}/remote_mirrors"
+        )"; then
+        printf \
+            'Error: Unable to add the push mirror settings of the "%s" project.\n' \
+            "${project}" \
+            "${add_github_project_push_mirrors_raw}" \
+            1>&2
+        exit 2
+    fi
 done
 
 printf \
