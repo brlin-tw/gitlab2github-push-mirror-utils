@@ -3,8 +3,6 @@
 #
 # Copyright 2025 林博仁(Buo-ren Lin) <buo.ren.lin@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
-GITLAB_PAT='unset'
-GITHUB_PAT='unset'
 
 GITLAB_NAMESPACE="${GITLAB_NAMESPACE:-"${USER:-"**UNSET**"}"}"
 GITHUB_NAMESPACE="${GITHUB_NAMESPACE:-"${GITLAB_NAMESPACE}"}"
@@ -106,34 +104,68 @@ fi
 
 printf \
     'Info: Checking the runtime parameters of the program...\n'
-if test "${GITLAB_PAT}" = unset; then
-    printf \
-        'Error: The GITLAB_PAT parameter is not set.\n' \
-        1>&2
-    exit 1
-fi
-
-if test "${GITLAB_PAT#glpat-}" = "${GITLAB_PAT}"; then
-    printf \
-        'Error: The specified value of the GITLAB_PAT parameter is invalid.\n' \
-        1>&2
-    exit 1
-fi
-
-if test "${GITHUB_PAT}" != unset \
-    && test "${GITHUB_PAT#github_pat_}" = "${GITHUB_PAT}"; then
-    printf \
-        'Error: The specified value of the GITHUB_PAT parameter is invalid.\n' \
-        1>&2
-    exit 1
-fi
-
 if test "${GITLAB_NAMESPACE}" == '**UNSET**'; then
     printf \
         'Error: The GITLAB_NAMESPACE environment variable must be set.\n' \
         1>&2
     exit 1
 fi
+
+regex_gitlab_pat='^glpat-'
+while true; do
+    printf \
+        'Info: Please enter the GitLab personal access token: '
+    if ! read -r gitlab_pat; then
+        printf \
+            '\nError: End of input encountered while reading the GitLab personal access token.\n' \
+            1>&2
+        exit 1
+    fi
+
+    if test -z "${gitlab_pat}"; then
+        printf \
+            'Error: The GitLab personal access token cannot be empty, please try again.\n' \
+            1>&2
+        continue
+    fi
+
+    if ! [[ "${gitlab_pat}" =~ ${regex_gitlab_pat} ]]; then
+        printf \
+            'Error: The specified value of the GitLab personal access token is invalid, it must start with "glpat-". Please try again.\n' \
+            1>&2
+        continue
+    fi
+
+    break
+done
+
+regex_github_pat='^github_pat_'
+while true; do
+    printf \
+        'Info: Please enter the GitHub personal access token: '
+    if ! read -r github_pat; then
+        printf \
+            '\nError: End of input encountered while reading the GitHub personal access token.\n' \
+            1>&2
+        exit 1
+    fi
+
+    if test -z "${github_pat}"; then
+        printf \
+            'Error: The GitHub personal access token cannot be empty, please try again.\n' \
+            1>&2
+        continue
+    fi
+
+    if ! [[ "${github_pat}" =~ ${regex_github_pat} ]]; then
+        printf \
+            'Error: The specified value of the GitHub personal access token is invalid, it must start with "github_pat_". Please try again.\n' \
+            1>&2
+        continue
+    fi
+
+    break
+done
 
 curl_opts_common=(
     --location
@@ -144,7 +176,7 @@ curl_opts_common=(
 )
 curl_opts_gitlab=(
     "${curl_opts_common[@]}"
-    --header "PRIVATE-TOKEN: ${GITLAB_PAT}"
+    --header "PRIVATE-TOKEN: ${gitlab_pat}"
 )
 
 printf \
@@ -404,7 +436,7 @@ curl_opts_github=(
     "${curl_opts_common[@]}"
     --header 'Accept: application/vnd.github+json'
     --header 'X-GitHub-Api-Version: 2022-11-28'
-    --header "Authorization: Bearer ${GITHUB_PAT}"
+    --header "Authorization: Bearer ${github_pat}"
 )
 curl_opts_github_response_code_only=(
     "${curl_opts_github[@]}"
@@ -602,7 +634,7 @@ for project in "${common_projects[@]}"; do
     printf \
         'Info: Constructing the payload for adding a new GitHub push mirror setting to the "%s" project...\n' \
         "${project}"
-    mirror_url_with_token="https://${GITHUB_NAMESPACE}:${GITHUB_PAT}@github.com/${GITHUB_NAMESPACE}/${project#*/}.git"
+    mirror_url_with_token="https://${GITHUB_NAMESPACE}:${github_pat}@github.com/${GITHUB_NAMESPACE}/${project#*/}.git"
     jq_opts_payload_construction=(
         --null-input
         --arg url "${mirror_url_with_token}"

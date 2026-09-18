@@ -30,9 +30,9 @@ The following prerequisites must be met in order to use this utility:
 
 ### Usage
 
-1. Edit [the `rotate-gitlab2github-push-mirror-credentials.sh` script](rotate-gitlab2github-push-mirror-credentials.sh) to set the values of the variables documented in the [Header variables that can change the utility's behaviors](#header-variables-that-can-change-the-utilitys-behaviors) section.
 1. Set the environment variables documented in the [Environment variables that can change the utility's behaviors](#environment-variables-that-can-change-the-utilitys-behaviors) section.
 1. Run the `rotate-gitlab2github-push-mirror-credentials.sh` script.
+1. Provide the prompted values documented in the [Prompted variables that can change the utility's behaviors](#prompted-variables-that-can-change-the-utilitys-behaviors) section.
 
 ### Environment variables that can change the utility's behaviors
 
@@ -68,9 +68,9 @@ The number of entries per page to request when pagination is required.
 
 **Default value:** `100`
 
-### Header variables that can change the utility's behaviors
+### Prompted variables that can change the utility's behaviors
 
-The following variables can be used to change the utility's behaviors, however they can only be set by directly editing the header portion of the utility script due to sensitive nature:
+The following variables can be used to change the utility's behaviors, they are prompted when running the utility due to their sensitive nature:
 
 #### GITLAB_PAT
 
@@ -89,7 +89,7 @@ Required fine-grained personal access token resource permissions:
             * Delete: For removing the existing repository push mirroring configuration.
             * Read: For checking the existing repository push mirroring configuration.
 
-**Default value:** (unset)
+**Default value:** (none)
 
 #### GITHUB_PAT
 
@@ -107,7 +107,7 @@ It should have the following GitHub fine-grained permissions:
     + Contents: To allow GitLab to push non-GitHub Actions workflow related content to the mirrored repository.
     + Workflows: To allow GitLab to push GitHub Actions workflow related content to the mirrored repository.
 
-**Default value:** (unset)
+**Default value:** (none)
 
 ### Logic
 
