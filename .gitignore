@@ -12,6 +12,9 @@
 # Don't track regular Unix hidden files
 .*
 
+# Do track AI agent instructions
+/.agents/
+
 # Do track Git configuration files
 !.git*
 
